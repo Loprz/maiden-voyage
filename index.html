@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Maiden Voyage — The Legend Zeppelin Transit Story</title>
-<link href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet">
 <style>
 :root{--bg:#090b0c;--panel:#101517;--panel2:#0f1113;--ink:#efe8d4;--muted:#9fa7a8;--gold:#e5ad35;--teal:#24c1b4;--red:#e14b42;--line:#253234;--blue:#74b7ff}
 *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink);line-height:1.56}
@@ -26,7 +25,7 @@ h1{font-family:Georgia,serif;font-size:clamp(3.4rem,11vw,8.2rem);line-height:.84
 .panel{background:linear-gradient(180deg,#111719,#0d1112);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 18px 42px rgba(0,0,0,.35)}
 .panel-pad{padding:18px}
 .sticky{position:sticky;top:70px}
-#map{height:78vh;min-height:560px;width:100%}
+#map{height:78vh;min-height:560px;width:100%;background:radial-gradient(circle at 50% 45%,#1d292d,#090c0d 72%)}
 .route-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .route-toolbar button{border:1px solid #314345;background:#121a1b;color:#e3e0d5;padding:9px 11px;border-radius:10px;cursor:pointer;font-weight:700}
 .route-toolbar button.active{border-color:var(--gold);color:var(--gold)}
@@ -45,7 +44,7 @@ h1{font-family:Georgia,serif;font-size:clamp(3.4rem,11vw,8.2rem);line-height:.84
 .quote{padding:8vh 5vw;text-align:center;font-family:Georgia,serif;font-size:clamp(2.2rem,6vw,5rem);line-height:1;color:var(--gold)}
 .footer{padding:0 18px 38px;color:#889392;text-align:center}
 .modal{display:none;position:fixed;inset:0;z-index:3000;background:#000d;align-items:center;justify-content:center;padding:20px} .modal.open{display:flex} .modal img{max-width:96vw;max-height:90vh;border-radius:12px;box-shadow:0 20px 60px #000} .close{position:absolute;right:20px;top:15px;font-size:2rem;color:#fff;cursor:pointer}
-.map-overlay{position:absolute;left:14px;bottom:14px;z-index:5;background:#081012d8;color:#d9d9ce;padding:10px 12px;border:1px solid #294243;border-radius:12px;max-width:310px;backdrop-filter:blur(10px)} .map-overlay h4{margin:0 0 6px;color:var(--gold)} .map-overlay p{margin:0;font-size:.9rem;color:#d5d0c2}
+.map-overlay{pointer-events:none;position:absolute;left:14px;bottom:14px;z-index:5;background:#081012d8;color:#d9d9ce;padding:10px 12px;border:1px solid #294243;border-radius:12px;max-width:310px;backdrop-filter:blur(10px)} .map-overlay h4{margin:0 0 6px;color:var(--gold)} .map-overlay p{margin:0;font-size:.9rem;color:#d5d0c2}
 @media (max-width:1000px){.grid{grid-template-columns:1fr} .sticky{position:static} #map{height:58vh;min-height:420px} .gallery{grid-template-columns:repeat(2,1fr)} .cast{grid-template-columns:repeat(2,1fr)} .stats{grid-template-columns:repeat(2,1fr)} .nav a{display:none} .hero{min-height:75vh;background-position:62% center} .posters{grid-template-columns:1fr}}
 </style>
 </head>
@@ -56,13 +55,13 @@ h1{font-family:Georgia,serif;font-size:clamp(3.4rem,11vw,8.2rem);line-height:.84
     <div class="kicker">The Legend Zeppelin Transit Story</div>
     <h1>Maiden<br>Voyage</h1>
     <p class="sub">One van. One trailer. Two shows. Two cooling-system failures. A relay team of friends, family, and mechanics—and a weekend nobody will forget.</p>
-    <div class="actions"><a class="btn" href="#map-section">▶ Start the story</a><button class="btn alt" id="heroReplay">↺ Replay the weekend</button></div>
+    <div class="actions"><a class="btn" href="#map-section">▶ Start the story</a><button class="btn alt" id="heroReplay" disabled>↺ Replay the weekend</button></div>
   </div>
 </header>
 
 <main>
 <section id="map-section" class="wrap">
-  <h2 class="section-title">MapLibre documentary map</h2>
+  <h2 class="section-title">The weekend on Apple Maps</h2>
   <div class="grid">
     <div class="panel panel-pad sticky">
       <div class="route-toolbar">
@@ -70,7 +69,7 @@ h1{font-family:Georgia,serif;font-size:clamp(3.4rem,11vw,8.2rem);line-height:.84
         <button data-filter="friday">Friday</button>
         <button data-filter="saturday">Saturday</button>
         <button data-filter="sunday">Sunday</button>
-        <button id="replayBtn">▶ Replay</button>
+        <button id="replayBtn" disabled>▶ Replay</button>
       </div>
       <div class="legend">
         <span class="sw"><i style="background:#e4ad34"></i> Friday main</span>
@@ -81,7 +80,7 @@ h1{font-family:Georgia,serif;font-size:clamp(3.4rem,11vw,8.2rem);line-height:.84
         <span class="sw"><i style="background:#9fd6ff"></i> Tow</span>
         <span class="sw"><i style="background:#9b59b6"></i> Josh & Marci relay</span>
       </div>
-      <p class="note">Routes now follow the road corridors instead of crow-flies lines. Exact stop and breakdown markers use the locations you supplied. Private homes are labeled in generalized form for sharing.</p>
+      <p class="note">Apple Directions calculates road-following geometry from the exact stops supplied for the trip. Private homes remain generalized in the visible labels.</p>
       <div id="timeline" class="timeline-list">
         <article class="event" data-index="0"><small>Before the trip</small><h3>Prologue</h3><p>The Transit’s first outing was breakfast with Ryan’s “gals” at The Runway Cafe in Woodlake. The next morning brought a failed valve stem at the front passenger tire and, soon after, a front-end bounce that led to CV-boot work at Pepe’s.</p></article><article class="event" data-index="1"><small>Thu, Jul 9</small><h3>Thursday setback</h3><p>The plan was to pick up the U-Haul trailer and preload it Thursday night. But the Visalia U-Haul computers were down, so Cody had to return first thing Friday morning.</p></article><article class="event" data-index="2"><small>Fri, Jul 10 · Morning</small><h3>Stop after stop</h3><p>After loading at home base, Ryan and Cody discovered the spare tire hanging and swaying under the van. Cesar’s Tire, Visalia Ford, and O’Reilly couldn’t provide the right tool. At Pepe’s Auto & Air, Cody and the mechanic improvised on hot pavement, flipped the upside-down spare, and seated it correctly.</p></article><article class="event" data-index="3"><small>Fri, Jul 10 · Late morning</small><h3>Finally rolling</h3><p>The Transit 350 high-roof felt strong towing the loaded trailer. Ryan and Cody picked up August on Pam’s Way in Bakersfield and stopped at In-N-Out before the Grapevine.</p></article><article class="event" data-index="4"><small>Fri, Jul 10 · Early afternoon</small><h3>Another tire issue</h3><p>A low-pressure warning pointed to the rear passenger tire. One broken air hose made things worse; the travel center across the way finally put enough air back in to continue.</p></article><article class="event" data-index="5"><small>Fri, Jul 10 · Afternoon</small><h3>Breakdown #1</h3><p>On the Grapevine, the Transit ran hot, lost power, and went into reduced-power mode. The Gorman exit was closed, so the crew limped to Quail Lake Road, parked under the freeway, and found coolant leaking with the reservoir effectively empty.</p></article><article class="event" data-index="6"><small>Fri, Jul 10 · Afternoon</small><h3>A stranger helps</h3><p>A truck driver who had been napping under the same overpass woke up, checked on the crew, drove Cody into Gorman for coolant, and returned with water too. That kindness got everyone back to town.</p></article><article class="event" data-index="7"><small>Fri, Jul 10 · Late afternoon</small><h3>The canceled show</h3><p>ATG Automotive Specialist diagnosed a cracked four-way coolant connector specific to the passenger-van rear-heater plumbing. The Grand Ritz Theater show in Escondido was first delayed, then canceled and slated for rescheduling.</p></article><article class="event" data-index="8"><small>Fri, Jul 10 · Evening</small><h3>Kristina’s rescue run</h3><p>Kristina found the right trailer-light connector, brought August’s truck to Gorman, and helped rescue the gear. A two-semi crash on northbound I-5 forced the return to Bakersfield through Lancaster and Tehachapi.</p></article><article class="event" data-index="9"><small>Sat, Jul 11 · Morning</small><h3>Saturday reset</h3><p>Coffee, breakfast burritos, and a promising call from Alex at ATG: the connector and several hoses were replaced and pressure-tested. Rylee arrived in Bakersfield, and optimism returned.</p></article><article class="event" data-index="10"><small>Sat, Jul 11 · Afternoon to Sun 1:30 AM</small><h3>Whisky saved</h3><p>The trailer moved from August’s truck back to the repaired Transit. Legend Zeppelin made load-in at the Whisky a Go Go, waited through the evening, and finally took the stage at 11:30 PM.</p></article><article class="event" data-index="11"><small>Sun, Jul 12 · Early morning</small><h3>North Hollywood tradition</h3><p>After the show, the crew kept the classic road-trip tradition alive with a Denny’s stop in North Hollywood. Cody rode with Josh so he wouldn’t have to make the long overnight drive alone.</p></article><article class="event" data-index="12"><small>Sun, Jul 12 · Pre-dawn</small><h3>“Perfect.”</h3><p>Climbing north above Castaic, the gauge looked perfect. August asked, “How’s she doing?” Cody’s text asked the same thing. Then came the sweet maple-syrup smell, the sudden temperature spike, limp mode, smoke, and the shoulder.</p></article><article class="event" data-index="13"><small>Sun, Jul 12 · Morning</small><h3>Breakdown #2</h3><p>With ChatGPT helping identify components, Josh narrowed the leak to a different hose than Saturday’s repair. AAA misplotted the location near Red Bluff, and towing the van plus trailer was quoted too high for the band’s budget.</p></article><article class="event" data-index="14"><small>Sun, Jul 12 · Morning</small><h3>The jack problem</h3><p>The U-Haul trailer had no tongue jack. That made the tow-truck driver’s floor jack essential: August had to retrieve his truck from ATG, return to the shoulder, and swap the trailer before the Transit could be loaded.</p></article><article class="event" data-index="15"><small>Sun, Jul 12 · Late morning</small><h3>Tow to Gorman</h3><p>The trailer moved onto August’s truck. Cody rode with the tow driver. Alex watched ATG’s security cameras remotely and directed exactly where to park the Transit and drop the keys.</p></article><article class="event" data-index="16"><small>Sun, Jul 12 · Afternoon</small><h3>The Delano handoff</h3><p>Josh took Rylee back to Bakersfield and continued to Visalia for Marci and the Expedition. The rescue groups converged in Delano, swapped the trailer again, transferred luggage, hugged it out, and pointed everyone back toward home.</p></article><article class="event" data-index="17"><small>Sun, Jul 12 · Late afternoon</small><h3>One last gotcha</h3><p>Back in Visalia, the padlock key for the U-Haul trailer turned out to be on the Transit keyring in ATG’s drop box. Ryan found the duplicate key in a small dish, and the gear was finally unloaded.</p></article><article class="event" data-index="18"><small>Mon, Jul 13</small><h3>Epilogue</h3><p>Cody and Marci planned to return to Gorman for the Transit. Back in Visalia, the next chapter would be a full cooling-system review before the August national tour.</p></article>
       </div>
@@ -145,39 +144,63 @@ h1{font-family:Georgia,serif;font-size:clamp(3.4rem,11vw,8.2rem);line-height:.84
 </section>
 
 <div class="quote">“The Transit broke down.<br>The team never did.”</div>
-<div class="footer">Single-file HTML documentary built with MapLibre GL JS, embedded photos, and a road-following route map. Basemap tiles and MapLibre assets load online when the file is opened.</div>
+<div class="footer">Single-file HTML documentary built with Apple MapKit JS, Apple Directions, embedded photos, and the exact trip locations supplied by the crew.</div>
 </main>
 
 <div class="modal" id="modal"><div class="close">×</div><img alt="Expanded photograph"></div>
 
-<script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
 <script>
 const stopFeatures = [{"type": "Feature", "properties": {"id": "home", "name": "Legend Zeppelin Home Base", "sub": "Visalia, CA", "lon": -119.2921, "lat": 36.3302, "icon": "\ud83c\udfe0", "kind": "base"}, "geometry": {"type": "Point", "coordinates": [-119.2921, 36.3302]}}, {"type": "Feature", "properties": {"id": "runway", "name": "The Runway Cafe", "sub": "Woodlake, CA", "lon": -119.1125, "lat": 36.4134, "icon": "\u2615", "kind": "prologue"}, "geometry": {"type": "Point", "coordinates": [-119.1125, 36.4134]}}, {"type": "Feature", "properties": {"id": "uhaul", "name": "U-Haul Visalia", "sub": "1930 E Mineral King Ave, Visalia", "lon": -119.2708, "lat": 36.3158, "icon": "\ud83d\udefb", "kind": "fri"}, "geometry": {"type": "Point", "coordinates": [-119.2708, 36.3158]}}, {"type": "Feature", "properties": {"id": "cesar", "name": "Cesar\u2019s Tire Shop", "sub": "210 S Cain Ct Suite B, Visalia", "lon": -119.277, "lat": 36.3292, "icon": "\ud83d\udede", "kind": "fri"}, "geometry": {"type": "Point", "coordinates": [-119.277, 36.3292]}}, {"type": "Feature", "properties": {"id": "ford", "name": "Visalia Ford", "sub": "Ben Maddox Blvd, Visalia", "lon": -119.27807424783855, "lat": 36.32801320570526, "icon": "\ud83d\udd27", "kind": "fri"}, "geometry": {"type": "Point", "coordinates": [-119.27807424783855, 36.32801320570526]}}, {"type": "Feature", "properties": {"id": "oreilly", "name": "O\u2019Reilly Auto Parts", "sub": "1310 N Ben Maddox Way, Visalia", "lon": -119.2772, "lat": 36.3412, "icon": "\ud83e\uddf0", "kind": "fri"}, "geometry": {"type": "Point", "coordinates": [-119.2772, 36.3412]}}, {"type": "Feature", "properties": {"id": "pepes", "name": "Pepe\u2019s Auto & Air", "sub": "913 E Main St, Visalia", "lon": -119.2819, "lat": 36.3306, "icon": "\ud83d\udee0\ufe0f", "kind": "fri"}, "geometry": {"type": "Point", "coordinates": [-119.2819, 36.3306]}}, {"type": "Feature", "properties": {"id": "pams", "name": "August & Kristina\u2019s Home", "sub": "West Bakersfield (label generalized)", "lon": -119.1708, "lat": 35.3987, "icon": "\ud83d\udc65", "kind": "fri"}, "geometry": {"type": "Point", "coordinates": [-119.1708, 35.3987]}}, {"type": "Feature", "properties": {"id": "innout", "name": "In-N-Out", "sub": "5926 Dennis McCarthy Dr, Lebec", "lon": -118.9448, "lat": 34.9875, "icon": "\ud83c\udf54", "kind": "fri"}, "geometry": {"type": "Point", "coordinates": [-118.9448, 34.9875]}}, {"type": "Feature", "properties": {"id": "travelcenter", "name": "Travel Center", "sub": "5821 Dennis McCarthy Dr, Lebec", "lon": -118.9497, "lat": 34.9862, "icon": "\u26fd", "kind": "fri"}, "geometry": {"type": "Point", "coordinates": [-118.9497, 34.9862]}}, {"type": "Feature", "properties": {"id": "break1", "name": "Breakdown #1", "sub": "Quail Lake Rd under I-5 southbound", "lon": -118.79754325876218, "lat": 34.76230828462977, "icon": "\u26a0\ufe0f", "kind": "fri"}, "geometry": {"type": "Point", "coordinates": [-118.79754325876218, 34.76230828462977]}}, {"type": "Feature", "properties": {"id": "atg", "name": "ATG Automotive Specialist", "sub": "49717 Ralphs Ranch Rd, Gorman", "lon": -118.8523, "lat": 34.7958, "icon": "\ud83d\udd29", "kind": "gorman"}, "geometry": {"type": "Point", "coordinates": [-118.8523, 34.7958]}}, {"type": "Feature", "properties": {"id": "whisky", "name": "Whisky a Go Go", "sub": "8901 Sunset Blvd, West Hollywood", "lon": -118.3856, "lat": 34.0908, "icon": "\ud83c\udfb8", "kind": "sat"}, "geometry": {"type": "Point", "coordinates": [-118.3856, 34.0908]}}, {"type": "Feature", "properties": {"id": "dennys", "name": "Denny\u2019s North Hollywood", "sub": "11377 Burbank Blvd, North Hollywood", "lon": -118.3806, "lat": 34.1729, "icon": "\ud83e\udd5e", "kind": "sun"}, "geometry": {"type": "Point", "coordinates": [-118.3806, 34.1729]}}, {"type": "Feature", "properties": {"id": "break2", "name": "Breakdown #2", "sub": "Northbound I-5 above Castaic", "lon": -118.70920237227405, "lat": 34.584851756553206, "icon": "\ud83d\udea8", "kind": "sun"}, "geometry": {"type": "Point", "coordinates": [-118.70920237227405, 34.584851756553206]}}, {"type": "Feature", "properties": {"id": "delano", "name": "Delano Trailer Swap", "sub": "Expedition meets August\u2019s truck", "lon": -119.24723826333327, "lat": 35.74748024475523, "icon": "\ud83d\udd04", "kind": "sun"}, "geometry": {"type": "Point", "coordinates": [-119.24723826333327, 35.74748024475523]}}];
 const routeGeoJSON = { type:'FeatureCollection', features: [{"type": "Feature", "properties": {"id": "friday_main", "title": "Friday rollout", "color": "#e4ad34", "width": 5, "dash": null, "category": "friday"}, "geometry": {"type": "LineString", "coordinates": [[-119.2921, 36.3302], [-119.286, 36.326], [-119.276, 36.32], [-119.2708, 36.3158], [-119.273, 36.322], [-119.277, 36.3292], [-119.278074, 36.328013], [-119.2772, 36.3412], [-119.279, 36.336], [-119.2819, 36.3306], [-119.265, 36.318], [-119.241, 36.23], [-119.236, 36.121], [-119.223, 35.963], [-119.202, 35.786], [-119.181, 35.584], [-119.1708, 35.3987], [-119.123, 35.304], [-119.053, 35.168], [-118.995, 35.068], [-118.957, 35.008], [-118.9448, 34.9875], [-118.9497, 34.9862], [-118.967, 34.97], [-118.956, 34.923], [-118.924, 34.864], [-118.871, 34.804], [-118.82, 34.78], [-118.797543, 34.762308], [-118.807, 34.772], [-118.833, 34.786], [-118.8523, 34.7958]]}}, {"type": "Feature", "properties": {"id": "friday_detour", "title": "Friday night detour via Lancaster & Tehachapi", "color": "#ca6cf2", "width": 4, "dash": [2, 2], "category": "friday"}, "geometry": {"type": "LineString", "coordinates": [[-118.8523, 34.7958], [-118.899, 34.824], [-118.96, 34.873], [-119.02, 34.932], [-118.945, 34.981], [-118.862, 34.983], [-118.741, 34.96], [-118.58, 34.864], [-118.405, 34.736], [-118.145, 34.689], [-118.107, 34.754], [-118.063, 34.853], [-118.041, 34.964], [-118.069, 35.033], [-118.199, 35.106], [-118.35, 35.119], [-118.453, 35.132], [-118.64, 35.206], [-118.8, 35.267], [-118.945, 35.316], [-119.076, 35.355], [-119.1708, 35.3987]]}}, {"type": "Feature", "properties": {"id": "saturday_recovery", "title": "Saturday recovery to Whisky", "color": "#23c1ad", "width": 5, "dash": null, "category": "saturday"}, "geometry": {"type": "LineString", "coordinates": [[-119.1708, 35.3987], [-119.125, 35.303], [-119.053, 35.168], [-118.995, 35.067], [-118.9497, 34.9862], [-118.8523, 34.7958], [-118.843, 34.76], [-118.759, 34.657], [-118.688, 34.578], [-118.65, 34.515], [-118.611, 34.451], [-118.523, 34.336], [-118.444, 34.244], [-118.419, 34.193], [-118.3856, 34.0908], [-118.39, 34.122], [-118.381, 34.1729]]}}, {"type": "Feature", "properties": {"id": "sunday_transit", "title": "Sunday pre-dawn Transit route", "color": "#e74c3c", "width": 5, "dash": null, "category": "sunday"}, "geometry": {"type": "LineString", "coordinates": [[-118.3806, 34.1729], [-118.389, 34.146], [-118.444, 34.241], [-118.522, 34.334], [-118.61, 34.451], [-118.647, 34.513], [-118.673, 34.553], [-118.693, 34.574], [-118.709202, 34.584852]]}}, {"type": "Feature", "properties": {"id": "tow_route", "title": "Tow route back to ATG", "color": "#9fd6ff", "width": 4, "dash": [1, 2], "category": "sunday"}, "geometry": {"type": "LineString", "coordinates": [[-118.709202, 34.584852], [-118.694, 34.574], [-118.673, 34.553], [-118.647, 34.513], [-118.611, 34.451], [-118.688, 34.578], [-118.759, 34.657], [-118.843, 34.76], [-118.8523, 34.7958]]}}, {"type": "Feature", "properties": {"id": "august_truck", "title": "August\u2019s truck rescue route", "color": "#4f8de8", "width": 5, "dash": null, "category": "sunday"}, "geometry": {"type": "LineString", "coordinates": [[-118.8523, 34.7958], [-118.843, 34.76], [-118.759, 34.657], [-118.688, 34.578], [-118.709202, 34.584852], [-118.688, 34.578], [-118.759, 34.657], [-118.843, 34.76], [-118.8523, 34.7958], [-118.9497, 34.9862], [-119.053, 35.168], [-119.125, 35.303], [-119.1708, 35.3987], [-119.209, 35.582], [-119.247238, 35.74748]]}}, {"type": "Feature", "properties": {"id": "josh_marci", "title": "Josh & Marci relay route", "color": "#9b59b6", "width": 4, "dash": [3, 2], "category": "sunday"}, "geometry": {"type": "LineString", "coordinates": [[-118.709202, 34.584852], [-118.688, 34.578], [-118.759, 34.657], [-118.843, 34.76], [-118.8523, 34.7958], [-118.9497, 34.9862], [-119.053, 35.168], [-119.125, 35.303], [-119.1708, 35.3987], [-119.181, 35.584], [-119.202, 35.786], [-119.223, 35.963], [-119.236, 36.121], [-119.241, 36.23], [-119.2921, 36.3302], [-119.247238, 35.74748], [-119.202, 35.786], [-119.223, 35.963], [-119.236, 36.121], [-119.241, 36.23], [-119.2921, 36.3302]]}}] };
 const focusIds = ["runway", "uhaul", "pepes", "pams", "travelcenter", "break1", "break1", "atg", "atg", "atg", "whisky", "dennys", "break2", "break2", "break2", "atg", "delano", "home", "atg"];
 const timeline = [{"title": "Prologue", "day": "Before the trip", "body": "The Transit\u2019s first outing was breakfast with Ryan\u2019s \u201cgals\u201d at The Runway Cafe in Woodlake. The next morning brought a failed valve stem at the front passenger tire and, soon after, a front-end bounce that led to CV-boot work at Pepe\u2019s."}, {"title": "Thursday setback", "day": "Thu, Jul 9", "body": "The plan was to pick up the U-Haul trailer and preload it Thursday night. But the Visalia U-Haul computers were down, so Cody had to return first thing Friday morning."}, {"title": "Stop after stop", "day": "Fri, Jul 10 \u00b7 Morning", "body": "After loading at home base, Ryan and Cody discovered the spare tire hanging and swaying under the van. Cesar\u2019s Tire, Visalia Ford, and O\u2019Reilly couldn\u2019t provide the right tool. At Pepe\u2019s Auto & Air, Cody and the mechanic improvised on hot pavement, flipped the upside-down spare, and seated it correctly."}, {"title": "Finally rolling", "day": "Fri, Jul 10 \u00b7 Late morning", "body": "The Transit 350 high-roof felt strong towing the loaded trailer. Ryan and Cody picked up August on Pam\u2019s Way in Bakersfield and stopped at In-N-Out before the Grapevine."}, {"title": "Another tire issue", "day": "Fri, Jul 10 \u00b7 Early afternoon", "body": "A low-pressure warning pointed to the rear passenger tire. One broken air hose made things worse; the travel center across the way finally put enough air back in to continue."}, {"title": "Breakdown #1", "day": "Fri, Jul 10 \u00b7 Afternoon", "body": "On the Grapevine, the Transit ran hot, lost power, and went into reduced-power mode. The Gorman exit was closed, so the crew limped to Quail Lake Road, parked under the freeway, and found coolant leaking with the reservoir effectively empty."}, {"title": "A stranger helps", "day": "Fri, Jul 10 \u00b7 Afternoon", "body": "A truck driver who had been napping under the same overpass woke up, checked on the crew, drove Cody into Gorman for coolant, and returned with water too. That kindness got everyone back to town."}, {"title": "The canceled show", "day": "Fri, Jul 10 \u00b7 Late afternoon", "body": "ATG Automotive Specialist diagnosed a cracked four-way coolant connector specific to the passenger-van rear-heater plumbing. The Grand Ritz Theater show in Escondido was first delayed, then canceled and slated for rescheduling."}, {"title": "Kristina\u2019s rescue run", "day": "Fri, Jul 10 \u00b7 Evening", "body": "Kristina found the right trailer-light connector, brought August\u2019s truck to Gorman, and helped rescue the gear. A two-semi crash on northbound I-5 forced the return to Bakersfield through Lancaster and Tehachapi."}, {"title": "Saturday reset", "day": "Sat, Jul 11 \u00b7 Morning", "body": "Coffee, breakfast burritos, and a promising call from Alex at ATG: the connector and several hoses were replaced and pressure-tested. Rylee arrived in Bakersfield, and optimism returned."}, {"title": "Whisky saved", "day": "Sat, Jul 11 \u00b7 Afternoon to Sun 1:30 AM", "body": "The trailer moved from August\u2019s truck back to the repaired Transit. Legend Zeppelin made load-in at the Whisky a Go Go, waited through the evening, and finally took the stage at 11:30 PM."}, {"title": "North Hollywood tradition", "day": "Sun, Jul 12 \u00b7 Early morning", "body": "After the show, the crew kept the classic road-trip tradition alive with a Denny\u2019s stop in North Hollywood. Cody rode with Josh so he wouldn\u2019t have to make the long overnight drive alone."}, {"title": "\u201cPerfect.\u201d", "day": "Sun, Jul 12 \u00b7 Pre-dawn", "body": "Climbing north above Castaic, the gauge looked perfect. August asked, \u201cHow\u2019s she doing?\u201d Cody\u2019s text asked the same thing. Then came the sweet maple-syrup smell, the sudden temperature spike, limp mode, smoke, and the shoulder."}, {"title": "Breakdown #2", "day": "Sun, Jul 12 \u00b7 Morning", "body": "With ChatGPT helping identify components, Josh narrowed the leak to a different hose than Saturday\u2019s repair. AAA misplotted the location near Red Bluff, and towing the van plus trailer was quoted too high for the band\u2019s budget."}, {"title": "The jack problem", "day": "Sun, Jul 12 \u00b7 Morning", "body": "The U-Haul trailer had no tongue jack. That made the tow-truck driver\u2019s floor jack essential: August had to retrieve his truck from ATG, return to the shoulder, and swap the trailer before the Transit could be loaded."}, {"title": "Tow to Gorman", "day": "Sun, Jul 12 \u00b7 Late morning", "body": "The trailer moved onto August\u2019s truck. Cody rode with the tow driver. Alex watched ATG\u2019s security cameras remotely and directed exactly where to park the Transit and drop the keys."}, {"title": "The Delano handoff", "day": "Sun, Jul 12 \u00b7 Afternoon", "body": "Josh took Rylee back to Bakersfield and continued to Visalia for Marci and the Expedition. The rescue groups converged in Delano, swapped the trailer again, transferred luggage, hugged it out, and pointed everyone back toward home."}, {"title": "One last gotcha", "day": "Sun, Jul 12 \u00b7 Late afternoon", "body": "Back in Visalia, the padlock key for the U-Haul trailer turned out to be on the Transit keyring in ATG\u2019s drop box. Ryan found the duplicate key in a small dish, and the gear was finally unloaded."}, {"title": "Epilogue", "day": "Mon, Jul 13", "body": "Cody and Marci planned to return to Gorman for the Transit. Back in Visalia, the next chapter would be a full cooling-system review before the August national tour."}];
-const stopLookup = Object.fromEntries(stopFeatures.map(f => [f.properties.id, f]));
 
-const map = new maplibregl.Map({
-  container: 'map',
-  style: {
-    version: 8,
-    sources: {
-      'osm': { type:'raster', tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize:256, attribution:'© OpenStreetMap contributors' }
-    },
-    layers: [{ id:'osm', type:'raster', source:'osm' }]
-  },
-  center: [-119.02, 35.33],
-  zoom: 6.4,
-  cooperativeGestures: true
-});
-map.addControl(new maplibregl.NavigationControl(), 'top-right');
+const MAPKIT_TOKENS = {
+  "maidenvoyage.ryanlopez.tech": "eyJraWQiOiJQWkZRUVI5NTZDIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJTSDRDRzQ2Q1lZIiwiaWF0IjoxNzgzOTUxNDUyLCJvcmlnaW4iOiJtYWlkZW52b3lhZ2UucnlhbmxvcGV6LnRlY2giLCJzY29wZSI6Im1hcGtpdF9qcyJ9.h4Sw6H-5q4JyTyj88P0DUIuQi-J1hKqissCzz0OZ_rINXOXNfqaXg4k860GoC10OLIcRCZIKBCw5n-xvBk0t6g",
+  "loprz.github.io": "eyJraWQiOiI1QUpMR0EyVjQzIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJTSDRDRzQ2Q1lZIiwiaWF0IjoxNzgzOTUxNDUyLCJvcmlnaW4iOiJsb3Byei5naXRodWIuaW8iLCJzY29wZSI6Im1hcGtpdF9qcyJ9.zM83ng0DLSN00U_M7OHNvAZi1IBHagwwAvcFPS8a11oBVP4MdOaMpLfd93jiMjbw_IrS681uKPLS2yRW0JLq8w"
+};
 
-const markerColor = { prologue:'#24c1b4', base:'#e5ad35', fri:'#e5ad35', gorman:'#9fd6ff', sat:'#23c1ad', sun:'#e74c3c' };
-const markers = [];
-function makeMarkerHTML(stop) {
-  const bg = markerColor[stop.kind] || '#ddd';
-  return `<div style="width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:${bg};border:2px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,.5);font-size:18px">${stop.icon}</div>`;
+const ADDRESS_LOOKUP = {
+  runway: "The Runway Cafe, Woodlake, CA",
+  uhaul: "1930 E Mineral King Ave, Visalia, CA 93292",
+  cesar: "210 S Cain Ct suite b, Visalia, CA 93292",
+  oreilly: "1310 N Ben Maddox Way, Visalia, CA 93292",
+  pepes: "913 E Main St, Visalia, CA 93292",
+  innout: "5926 Dennis McCarthy Dr, Lebec, CA 93243",
+  travelcenter: "5821 Dennis McCarthy Dr, Lebec, CA 93243",
+  atg: "49717 Ralphs Ranch Rd, Gorman, CA 93243",
+  whisky: "8901 Sunset Blvd, West Hollywood, CA 90069",
+  dennys: "11377 Burbank Blvd, North Hollywood, CA 91601"
+};
+
+const ROUTE_DEFS = [
+  { id:"friday_main", category:"friday", points:["home","uhaul","cesar","ford","oreilly","pepes","pams","innout","travelcenter","break1","atg"] },
+  { id:"friday_detour", category:"friday", points:["atg","lancaster","tehachapi","pams"] },
+  { id:"saturday_recovery", category:"saturday", points:["pams","atg","whisky","dennys"] },
+  { id:"sunday_transit", category:"sunday", points:["dennys","break2"] },
+  { id:"tow_route", category:"sunday", points:["break2","atg"] },
+  { id:"august_truck", category:"sunday", points:["atg","break2","atg","pams","delano"] },
+  { id:"josh_marci", category:"sunday", points:["break2","atg","pams","home","delano","home"] }
+];
+
+const HIDDEN_COORDINATES = {
+  lancaster: [34.6868, -118.1542],
+  tehachapi: [35.1322, -118.4489]
+};
+
+let map = null;
+let mapReady = false;
+let currentFilter = "all";
+let annotationsById = {};
+let coordinatesById = {};
+let routeGroups = {};
+let replaying = false;
+
+function tokenForHost() {
+  const host = location.hostname.toLowerCase();
+  if (MAPKIT_TOKENS[host]) return MAPKIT_TOKENS[host];
+  if (host.endsWith('.github.io')) return MAPKIT_TOKENS['loprz.github.io'];
+  return MAPKIT_TOKENS['maidenvoyage.ryanlopez.tech'];
 }
 
 function setOverlay(title, text) {
@@ -185,120 +208,251 @@ function setOverlay(title, text) {
   document.getElementById('overlayText').textContent = text;
 }
 
-let loaded = false;
-map.on('load', () => {
-  loaded = true;
-  map.addSource('routes', { type:'geojson', data: routeGeoJSON });
-  const routeIds = [...new Set(routeGeoJSON.features.map(f => f.properties.id))];
-  routeIds.forEach(id => {
-    const f = routeGeoJSON.features.find(x => x.properties.id === id);
-    map.addLayer({
-      id,
-      type: 'line',
-      source: 'routes',
-      filter: ['==', ['get','id'], id],
-      layout: { 'line-cap':'round', 'line-join':'round', 'visibility':'visible' },
-      paint: {
-        'line-color': f.properties.color,
-        'line-width': f.properties.width,
-        'line-opacity': 0.9,
-        ...(f.properties.dash ? { 'line-dasharray': f.properties.dash } : {})
-      }
-    });
-  });
-
-  map.addSource('stops', { type:'geojson', data: {type:'FeatureCollection', features: stopFeatures} });
-  stopFeatures.forEach(f => {
-    const el = document.createElement('div');
-    el.innerHTML = makeMarkerHTML(f.properties);
-    const marker = new maplibregl.Marker({element: el.firstChild})
-      .setLngLat(f.geometry.coordinates)
-      .setPopup(new maplibregl.Popup({offset: 18}).setHTML(`<strong>${f.properties.name}</strong><br><span style="color:#555">${f.properties.sub}</span>`))
-      .addTo(map);
-    markers.push({id:f.properties.id, marker});
-  });
-  fitAll();
-});
-
-function fitAll() {
-  const bounds = new maplibregl.LngLatBounds();
-  stopFeatures.forEach(f => bounds.extend(f.geometry.coordinates));
-  map.fitBounds(bounds, { padding: 70, duration: 800 });
-}
-function flyToStop(id, zoom=10.6) {
-  const f = stopLookup[id];
-  if(!f) return;
-  map.flyTo({ center: f.geometry.coordinates, zoom, speed: 0.8, curve: 1.2, essential: true });
-  const hit = markers.find(m => m.id === id);
-  if(hit) hit.marker.togglePopup();
+function coord(lat, lon) { return new mapkit.Coordinate(lat, lon); }
+function fallbackCoord(feature) {
+  return coord(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
 }
 
-function setFilter(mode) {
-  const features = routeGeoJSON.features;
-  features.forEach(f => {
-    const show = mode === 'all' || f.properties.category === mode;
-    map.setLayoutProperty(f.properties.id, 'visibility', show ? 'visible' : 'none');
+function geocode(geocoder, feature) {
+  return new Promise(resolve => {
+    const id = feature.properties.id;
+    const address = ADDRESS_LOOKUP[id];
+    if (!address) { resolve(fallbackCoord(feature)); return; }
+    try {
+      geocoder.lookup(address, (error, data) => {
+        const place = !error && data && data.results && data.results[0];
+        resolve(place && place.coordinate ? place.coordinate : fallbackCoord(feature));
+      });
+    } catch (error) { resolve(fallbackCoord(feature)); }
   });
-  document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === mode));
 }
 
-const events = [...document.querySelectorAll('.event')];
-events.forEach((el, i) => el.addEventListener('click', () => {
-  events.forEach(x => x.classList.remove('active')); el.classList.add('active');
-  const id = focusIds[i];
-  const item = timeline[i];
-  setOverlay(item.title, item.body);
-  flyToStop(id, id === 'break1' || id === 'break2' ? 11.7 : 10.8);
-}));
+function routeSegment(directions, origin, destination) {
+  return new Promise(resolve => {
+    try {
+      directions.route({
+        origin,
+        destination,
+        transportType: mapkit.TransportType.Automobile
+      }, (error, data) => {
+        resolve(!error && data && data.routes && data.routes[0] ? data.routes[0] : null);
+      });
+    } catch (error) { resolve(null); }
+  });
+}
 
-[...document.querySelectorAll('[data-filter]')].forEach(btn => btn.onclick = () => loaded && setFilter(btn.dataset.filter));
+function styleFor(feature, opacity=.94, width=null) {
+  return new mapkit.Style({
+    lineWidth: width || feature.properties.width || 5,
+    strokeColor: feature.properties.color,
+    strokeOpacity: opacity,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+}
+
+function routeFeature(id) {
+  return routeGeoJSON.features.find(feature => feature.properties.id === id);
+}
+
+function createFallback(def) {
+  const feature = routeFeature(def.id);
+  const points = feature.geometry.coordinates.map(([lon,lat]) => coord(lat,lon));
+  const overlay = new mapkit.PolylineOverlay(points, { style: styleFor(feature,.32,3) });
+  overlay.data = { routeId:def.id, category:def.category, fallback:true };
+  map.addOverlay(overlay);
+  return overlay;
+}
+
+async function buildRoute(def, directions) {
+  const feature = routeFeature(def.id);
+  const group = routeGroups[def.id] = {
+    category:def.category,
+    fallback:createFallback(def),
+    overlays:[],
+    complete:false
+  };
+  let failed = false;
+  for (let index=0; index<def.points.length-1; index++) {
+    const result = await routeSegment(directions, coordinatesById[def.points[index]], coordinatesById[def.points[index+1]]);
+    if (result && result.polyline) {
+      result.polyline.style = styleFor(feature,.95);
+      result.polyline.data = { routeId:def.id, category:def.category, fallback:false };
+      map.addOverlay(result.polyline);
+      group.overlays.push(result.polyline);
+    } else {
+      failed = true;
+    }
+    await new Promise(resolve => setTimeout(resolve,90));
+  }
+  group.complete = group.overlays.length > 0 && !failed;
+  group.fallback.visible = !group.complete && visibleFor(def.category);
+  applyFilter(currentFilter);
+}
+
+function visibleFor(category) { return currentFilter === 'all' || currentFilter === category; }
+function applyFilter(mode) {
+  currentFilter = mode;
+  Object.values(routeGroups).forEach(group => {
+    const visible = visibleFor(group.category);
+    group.fallback.visible = visible && !group.complete;
+    group.overlays.forEach(overlay => overlay.visible = visible);
+  });
+  document.querySelectorAll('[data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === mode));
+}
+
+function itemsForAll() {
+  return [
+    ...Object.values(annotationsById),
+    ...Object.values(routeGroups).flatMap(group => group.overlays.length ? group.overlays : [group.fallback])
+  ].filter(Boolean);
+}
+
+function showAll() {
+  map.showItems(itemsForAll(), { animate:true, padding:new mapkit.Padding(72,45,72,45) });
+}
+
+function focusStop(id, title, body) {
+  const annotation = annotationsById[id];
+  if (!annotation) return;
+  setOverlay(title, body);
+  map.showItems([annotation], {
+    animate:true,
+    minimumSpan:new mapkit.CoordinateSpan(.08,.08),
+    padding:new mapkit.Padding(105,55,105,55)
+  });
+  annotation.selected = true;
+}
+
+function animateOverlay(overlay, duration=720) {
+  return new Promise(resolve => {
+    if (!overlay || !overlay.style) { resolve(); return; }
+    overlay.style.strokeStart = 0;
+    overlay.style.strokeEnd = 0;
+    const start = performance.now();
+    function frame(now) {
+      const progress = Math.min(1,(now-start)/duration);
+      overlay.style.strokeEnd = progress;
+      if (progress < 1) requestAnimationFrame(frame); else resolve();
+    }
+    requestAnimationFrame(frame);
+  });
+}
 
 async function replayWeekend() {
-  if(!loaded || replayWeekend.running) return;
-  replayWeekend.running = true;
-  setFilter('all');
+  if (!mapReady || replaying) return;
+  replaying = true;
+  applyFilter('all');
   const sequence = [
-    ['runway', 9.6, 'The Transit begins its story with breakfast at The Runway Cafe.'],
-    ['uhaul', 12.0, 'Friday starts with the U-Haul trailer pickup in Visalia.'],
-    ['cesar', 12.7, 'The hanging spare sends Ryan and Cody searching for help.'],
-    ['ford', 12.7, 'Ford tries to help, but no right tool.'],
-    ['oreilly', 12.7, 'O’Reilly is another dead end.'],
-    ['pepes', 12.9, 'Pepe’s Auto & Air improvises the fix.'],
-    ['pams', 8.6, 'August is picked up in west Bakersfield.'],
-    ['innout', 10.7, 'The pre-Grapevine In-N-Out stop.'],
-    ['travelcenter', 11.2, 'The successful air stop restores the rear tire.'],
-    ['break1', 12.0, 'Breakdown #1 at Quail Lake Road under I-5.'],
-    ['atg', 12.2, 'ATG diagnoses the cracked four-way connector.'],
-    ['pams', 8.2, 'Kristina’s rescue and the long detour return the crew to Bakersfield.'],
-    ['atg', 12.0, 'Saturday: the repaired Transit is picked up again.'],
-    ['whisky', 11.0, 'Legend Zeppelin reaches the Whisky a Go Go.'],
-    ['dennys', 11.2, 'After the show, the crew heads to Denny’s in North Hollywood.'],
-    ['break2', 11.8, 'The second cooling-system failure ends the easy way home.'],
-    ['atg', 12.0, 'Tow to Gorman and drop-off at ATG.'],
-    ['delano', 10.5, 'The trailer changes vehicles one last time in Delano.'],
-    ['home', 9.2, 'Back to Visalia—one last key problem, then unload.']
+    ['runway','The beginning','Breakfast at The Runway Cafe starts the Transit story.'],
+    ['uhaul','Friday morning','The U-Haul trailer finally reaches home base.'],
+    ['pepes','The improvised fix','Pepe’s gets the upside-down spare seated correctly.'],
+    ['pams','Bakersfield pickup','August joins the maiden voyage.'],
+    ['travelcenter','The air stop','The rear tire receives enough air to continue.'],
+    ['break1','Breakdown #1','The cooling system fails at Quail Lake Road.'],
+    ['atg','Gorman','ATG diagnoses the four-way coolant connector.'],
+    ['pams','The detour','Kristina’s rescue returns the crew through Lancaster and Tehachapi.'],
+    ['whisky','The show survives','Legend Zeppelin reaches the Whisky a Go Go.'],
+    ['dennys','After the show','The road tradition continues at Denny’s.'],
+    ['break2','Breakdown #2','The Transit fails again above Castaic.'],
+    ['atg','Tow to Gorman','The Transit returns to ATG on a rollback.'],
+    ['delano','The handoff','The Expedition takes over the trailer in Delano.'],
+    ['home','Home base','The equipment finally returns to Visalia.']
   ];
-  for (const [id, zoom, text] of sequence) {
-    const stop = stopLookup[id];
-    if(!stop) continue;
-    setOverlay(stop.properties.name, text);
-    map.flyTo({ center: stop.geometry.coordinates, zoom, speed:0.8, curve:1.2, essential:true });
-    const hit = markers.find(m => m.id === id);
-    if(hit) hit.marker.togglePopup();
-    await new Promise(r => setTimeout(r, 1500));
+  for (const [id,title,body] of sequence) {
+    focusStop(id,title,body);
+    await new Promise(resolve => setTimeout(resolve,1450));
   }
-  fitAll();
-  setOverlay('Weekend overview', 'Use the timeline or replay button to move through the trip.');
-  replayWeekend.running = false;
+  for (const def of ROUTE_DEFS) {
+    const group = routeGroups[def.id];
+    if (!group) continue;
+    const overlays = group.overlays.length ? group.overlays : [group.fallback];
+    const feature = routeFeature(def.id);
+    setOverlay(feature.properties.title,'Tracing this part of the rescue chain on Apple Maps.');
+    map.showItems(overlays, { animate:true, padding:new mapkit.Padding(80,48,80,48) });
+    for (const overlay of overlays) await animateOverlay(overlay);
+  }
+  showAll();
+  setOverlay('Weekend overview','Apple Maps is showing the complete route and rescue chain.');
+  replaying = false;
 }
-replayWeekend.running = false;
+
+window.initMapKit = async function() {
+  try {
+    map = new mapkit.Map('map', {
+      mapType: mapkit.MapType.MutedStandard,
+      colorScheme: mapkit.ColorScheme.Dark,
+      tintColor: '#e5ad35',
+      showsMapTypeControl: false,
+      showsZoomControl: true,
+      showsScale: mapkit.FeatureVisibility.Adaptive,
+      showsCompass: mapkit.FeatureVisibility.Adaptive,
+      isZoomEnabled: true,
+      isScrollEnabled: true,
+      isRotationEnabled: true
+    });
+
+    setOverlay('Apple Maps connected','Resolving the exact stops and calculating road-following routes.');
+    const geocoder = new mapkit.Geocoder();
+    for (const feature of stopFeatures) {
+      coordinatesById[feature.properties.id] = await geocode(geocoder,feature);
+    }
+    coordinatesById.lancaster = coord(34.6868,-118.1542);
+    coordinatesById.tehachapi = coord(35.1322,-118.4489);
+
+    const glyphs = {home:'H',runway:'☕',uhaul:'T',cesar:'1',ford:'2',oreilly:'3',pepes:'4',pams:'A',innout:'🍔',travelcenter:'⛽',break1:'!',atg:'🔧',whisky:'♫',dennys:'D',break2:'!',delano:'↔'};
+    const colors = {base:'#e5ad35',prologue:'#24c1b4',fri:'#e5ad35',gorman:'#9fd6ff',sat:'#24c1b4',sun:'#e14b42'};
+    stopFeatures.forEach(feature => {
+      const properties = feature.properties;
+      const annotation = new mapkit.MarkerAnnotation(coordinatesById[properties.id], {
+        title:properties.name,
+        subtitle:properties.sub,
+        color:colors[properties.kind] || '#e5ad35',
+        glyphText:glyphs[properties.id] || '•',
+        data:{id:properties.id}
+      });
+      annotationsById[properties.id] = annotation;
+      map.addAnnotation(annotation);
+    });
+
+    const directions = new mapkit.Directions();
+    ROUTE_DEFS.forEach(def => buildRoute(def,directions));
+    showAll();
+    setOverlay('Apple Maps ready','The exact stops are placed. Apple road routes will replace the fallback corridors as they finish calculating.');
+    mapReady = true;
+    document.getElementById('replayBtn').disabled = false;
+    document.getElementById('heroReplay').disabled = false;
+  } catch (error) {
+    console.error(error);
+    setOverlay('Apple Maps unavailable','Open the hosted HTTPS page and confirm that the token origin matches the website domain.');
+  }
+};
+
+document.querySelectorAll('.event').forEach((element,index) => element.addEventListener('click', () => {
+  document.querySelectorAll('.event').forEach(item => item.classList.remove('active'));
+  element.classList.add('active');
+  const item = timeline[index];
+  if (mapReady) focusStop(focusIds[index],item.title,item.body);
+}));
+
+document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => mapReady && applyFilter(button.dataset.filter)));
 document.getElementById('replayBtn').onclick = replayWeekend;
 document.getElementById('heroReplay').onclick = replayWeekend;
 
 const modal = document.getElementById('modal');
 const modalImg = modal.querySelector('img');
-document.querySelectorAll('.shot img, .poster img').forEach(img => img.addEventListener('click', () => { modalImg.src = img.src; modal.classList.add('open'); }));
+document.querySelectorAll('.shot img, .poster img').forEach(img => img.addEventListener('click', () => { modalImg.src=img.src; modal.classList.add('open'); }));
 modal.addEventListener('click', () => modal.classList.remove('open'));
+
+const loader = document.createElement('script');
+loader.src = 'https://cdn.apple-mapkit.com/mk/6.x.x/mapkit.core.js';
+loader.crossOrigin = 'anonymous';
+loader.async = true;
+loader.dataset.callback = 'initMapKit';
+loader.dataset.token = tokenForHost();
+loader.dataset.libraries = 'full-map,services';
+loader.onerror = () => setOverlay('Apple Maps did not load','Check the internet connection or open the hosted HTTPS site.');
+document.head.appendChild(loader);
 </script>
 </body>
 </html>
